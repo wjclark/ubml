@@ -3,6 +3,7 @@ from scipy.optimize import minimize
 from scipy.io import loadmat
 from math import sqrt
 
+   
 
 def initializeWeights(n_in,n_out):
     """
