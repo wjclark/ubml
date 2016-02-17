@@ -2,6 +2,7 @@ import numpy as np
 from scipy.optimize import minimize
 from scipy.io import loadmat
 from math import sqrt
+import math
 
    
 
@@ -27,8 +28,8 @@ def sigmoid(z):
     
     """# Notice that z can be a scalar, a vector or a matrix
     # return the sigmoid of input z"""
+    return scipy.expit(z)
     
-    return  #your code here
     
     
 
@@ -63,14 +64,24 @@ def preprocess():
     
     #Pick a reasonable size for validation data
     
-    
+    all_training_keys = [ x for x in mat if 'train' in x  ][2:]##everyone past the first two
+    validation_keys = [ x for x in mat if 'train' in x  ][:2] #save the first two sets for validation.
+
+    test_keys = [ x for x in mat if 'test' in x  ]
+
+    def load_pylist(keys):
+        data = []
+        for key in keys:
+            data.append(mat[key])
+        return data
+
     #Your code here
-    train_data = np.array([])
-    train_label = np.array([])
-    validation_data = np.array([])
-    validation_label = np.array([])
-    test_data = np.array([])
-    test_label = np.array([])
+    train_data = np.array( load_pylist(all_training_keys) )
+    train_label = np.array(all_training_keys)
+    validation_data = np.array( load_pylist(validation_keys) )
+    validation_label = np.array(validation_keys)
+    test_data = np.array( load_pylist(test_keys) )
+    test_label = np.array( test_keys )
     
     return train_data, train_label, validation_data, validation_label, test_data, test_label
     
@@ -168,7 +179,7 @@ def nnPredict(w1,w2,data):
 """**************Neural Network Script Starts here********************************"""
 
 train_data, train_label, validation_data,validation_label, test_data, test_label = preprocess();
-
+"""
 
 #  Train Neural Network
 
@@ -230,3 +241,5 @@ predicted_label = nnPredict(w1,w2,test_data)
 #find the accuracy on Validation Dataset
 
 print('\n Test set Accuracy:' + + str(100*np.mean((predicted_label == test_label).astype(float))) + '%')
+
+"""
