@@ -1,3 +1,4 @@
+
 import numpy as np
 from scipy.optimize import minimize
 from scipy.io import loadmat
@@ -147,14 +148,14 @@ def nnObjFunction(params, *args):
     for values in training_data:
         hidden.append( mlfunctions.feedforward_propagation(values, w1, n_hidden) )
     hidden = sigmoid( np.array(hidden) )
-    print "HIDDEN\n", hidden[:30]
+    print( "HIDDEN\n", hidden[:30] )
     sys.exit(-1)
     
     part_two = []
     for hidden_a in hidden:
         part_two.append( mlfunctions.feedforward_part_two (hidden, w2, n_class)  )
-    part_two = "PART_TWO\n", sigmoid(part_two)
-    print part_two[:30]
+    part_two = sigmoid(part_two)
+    print( "PT2", part_two[:30] )
     #Make sure you reshape the gradient matrices to a 1D array. for instance if your gradient matrices are grad_w1 and grad_w2
     #you would use code similar to the one below to create a flat array
     #obj_grad = np.concatenate((grad_w1.flatten(), grad_w2.flatten()),0)
@@ -226,7 +227,7 @@ opts = {'maxiter' : 50}    # Preferred value.
 
 nn_params = minimize(nnObjFunction, initialWeights, jac=True, args=args,method='CG', options=opts)
 
-"""
+
 #In Case you want to use fmin_cg, you may have to split the nnObjectFunction to two functions nnObjFunctionVal
 #and nnObjGradient. Check documentation for this function before you proceed.
 #nn_params, cost = fmin_cg(nnObjFunctionVal, initialWeights, nnObjGradient,args = args, maxiter = 50)
@@ -257,4 +258,4 @@ predicted_label = nnPredict(w1,w2,test_data)
 #find the accuracy on Validation Dataset
 
 print('\n Test set Accuracy:' + + str(100*np.mean((predicted_label == test_label).astype(float))) + '%')
-"""
+

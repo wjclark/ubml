@@ -50,10 +50,10 @@ def error_function( values, true_values, n_values ):
 
     
 if __name__ == "__main__":
-	print "commence hand wavey unit tests..."
+	print("commence hand wavey unit tests..." )
 	npa = np.array([1.0,2.0])
 	for num in npa:
-		print type(num)
-	print matt_sigmoid( npa )
+		print( type(num))
+	print( matt_sigmoid( npa ))
 	npm = np.array( [ [ 1.0, 2.0, 3.0] , [2.2, 1.1, 3.3 ], [4.0,3.0,2.0] ] )
-	print matt_sigmoid( npm )
+	print( matt_sigmoid( npm ))
