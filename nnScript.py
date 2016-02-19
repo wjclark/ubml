@@ -3,7 +3,7 @@ from scipy.optimize import minimize
 from scipy.io import loadmat
 from math import sqrt
 import math
-
+import mlfunctions
    
 
 def initializeWeights(n_in,n_out):
@@ -72,16 +72,23 @@ def preprocess():
     def load_pylist(keys):
         data = []
         for key in keys:
-            data.append(mat[key])
+            examples = mat[key]
+            for ex in examples:
+                ex = [ float(x)/0xFF for x in ex.flatten() ] #normalize and reshape
+                data.append( ex )
         return data
+
+    def true_label(keys, type_):
+        return map( lambda x : x.replace(type_,''), keys )
 
     #Your code here
     train_data = np.array( load_pylist(all_training_keys) )
-    train_label = np.array(all_training_keys)
+
+    train_label = np.array( range( 0,len(train_data) ) )
     validation_data = np.array( load_pylist(validation_keys) )
-    validation_label = np.array(validation_keys)
+    validation_label = np.array( range( 0,len(train_data) ) )
     test_data = np.array( load_pylist(test_keys) )
-    test_label = np.array( test_keys )
+    test_label = np.array( range( 0,len(train_data) ) )
     
     return train_data, train_label, validation_data, validation_label, test_data, test_label
     
@@ -89,7 +96,8 @@ def preprocess():
     
 
 def nnObjFunction(params, *args):
-    """% nnObjFunction computes the value of objective function (negative log 
+    """
+    % nnObjFunction computes the value of objective function (negative log 
     %   likelihood error function with regularization) given the parameters 
     %   of Neural Networks, thetraining data, their corresponding training 
     %   labels and lambda - regularization hyper-parameter.
@@ -132,19 +140,20 @@ def nnObjFunction(params, *args):
     w2 = params[(n_hidden * (n_input + 1)):].reshape((n_class, (n_hidden + 1)))
     obj_val = 0  
     
+    hidden = []
     #Your code here
-    #
-    #
-    #
-    #
-    #
-    
-    
-    
+    for values in training_data:
+        hidden.append( mlfunctions.feedforward_propagation(values, w1, n_hidden) )
+
+    part_two = []
+    for hidden_a in hidden:
+        part_two.append( mlfunctions.feedforward_part_two (hidden, w2, n_class)  )
+
+    print part_two
     #Make sure you reshape the gradient matrices to a 1D array. for instance if your gradient matrices are grad_w1 and grad_w2
     #you would use code similar to the one below to create a flat array
     #obj_grad = np.concatenate((grad_w1.flatten(), grad_w2.flatten()),0)
-    obj_grad = np.array([])
+    obj_grad = np.array()
     
     return (obj_val,obj_grad)
 
@@ -179,7 +188,7 @@ def nnPredict(w1,w2,data):
 """**************Neural Network Script Starts here********************************"""
 
 train_data, train_label, validation_data,validation_label, test_data, test_label = preprocess();
-"""
+
 
 #  Train Neural Network
 
@@ -211,6 +220,7 @@ opts = {'maxiter' : 50}    # Preferred value.
 
 nn_params = minimize(nnObjFunction, initialWeights, jac=True, args=args,method='CG', options=opts)
 
+"""
 #In Case you want to use fmin_cg, you may have to split the nnObjectFunction to two functions nnObjFunctionVal
 #and nnObjGradient. Check documentation for this function before you proceed.
 #nn_params, cost = fmin_cg(nnObjFunctionVal, initialWeights, nnObjGradient,args = args, maxiter = 50)
@@ -241,5 +251,4 @@ predicted_label = nnPredict(w1,w2,test_data)
 #find the accuracy on Validation Dataset
 
 print('\n Test set Accuracy:' + + str(100*np.mean((predicted_label == test_label).astype(float))) + '%')
-
 """

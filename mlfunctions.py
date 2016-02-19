@@ -3,7 +3,8 @@ import numpy.linalg as la
 import math
 
 def feedforward_propagation(value_list,weight_matrix,n_hidden_values):
-    assert len(value_list) == len(weight_matrix)
+    #print len(value_list), len(weight_matrix[0])-1
+    assert len(value_list) == len(weight_matrix[0])-1  ##we are missing the regularization slot now.
     a = []
     for j in range(n_hidden_values):
         aj = 0
@@ -12,8 +13,6 @@ def feedforward_propagation(value_list,weight_matrix,n_hidden_values):
         a.append(aj)
     return a
 
-def sigmoid(aj):
-    return 1/(1+math.e**(-aj))
 
 def feedforward_part_two(hidden_values,weight_matrix_two,n_output_layers):
 	b = []
@@ -24,6 +23,7 @@ def feedforward_part_two(hidden_values,weight_matrix_two,n_output_layers):
 		b.append(bj)
 	return b
 
-
+def error_function( values, true_values, n_values ):
+	pass
 
     
