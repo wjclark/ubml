@@ -30,7 +30,7 @@ def sigmoid(z):
     
     """# Notice that z can be a scalar, a vector or a matrix
     # return the sigmoid of input z"""
-    return expit(z)
+    return matt_sigmoid(z)
     
     
     
@@ -146,18 +146,19 @@ def nnObjFunction(params, *args):
     #Your code here
     for values in training_data:
         hidden.append( mlfunctions.feedforward_propagation(values, w1, n_hidden) )
-    hidden = matt_sigmoid( np.array(hidden) )
-    print hidden[:30]
+    hidden = sigmoid( np.array(hidden) )
+    print "HIDDEN\n", hidden[:30]
     sys.exit(-1)
     
     part_two = []
     for hidden_a in hidden:
         part_two.append( mlfunctions.feedforward_part_two (hidden, w2, n_class)  )
-    part_two = matt_sigmoid(part_two)
+    part_two = "PART_TWO\n", sigmoid(part_two)
     print part_two[:30]
     #Make sure you reshape the gradient matrices to a 1D array. for instance if your gradient matrices are grad_w1 and grad_w2
     #you would use code similar to the one below to create a flat array
     #obj_grad = np.concatenate((grad_w1.flatten(), grad_w2.flatten()),0)
+    
     obj_grad = np.array()
     
     return (obj_val,obj_grad)
