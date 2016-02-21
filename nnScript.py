@@ -31,7 +31,7 @@ def sigmoid(z):
     
     """# Notice that z can be a scalar, a vector or a matrix
     # return the sigmoid of input z"""
-    return matt_sigmoid(z)
+    return mlfunctions.matt_sigmoid(z)
     
     
     
@@ -82,16 +82,23 @@ def preprocess():
         return data
 
     def true_label(keys, type_): #maybe not needed
-        return map( lambda x : x.replace(type_,''), keys )
+        true_values = map( lambda x : int(x.replace(type_,'')), keys )
+        labels = []
+        for value in true_values:
+            output = [ 0 for x in range(10) ]
+            output[value] = 1
+            #print output
+            labels.append( output )
+        return np.array(labels)
 
     #Your code here
     train_data = np.array( load_pylist(all_training_keys) )
 
-    train_label = np.array( range( 0,len(train_data) ) )
+    train_label = np.array( true_label(all_training_keys,'train') )
     validation_data = np.array( load_pylist(validation_keys) )
-    validation_label = np.array( range( 0,len(train_data) ) )
+    validation_label = np.array( true_label(all_training_keys,'train') )
     test_data = np.array( load_pylist(test_keys) )
-    test_label = np.array( range( 0,len(train_data) ) )
+    test_label = np.array( true_label(test_keys,'test') )
     
     return train_data, train_label, validation_data, validation_label, test_data, test_label
     
@@ -138,18 +145,19 @@ def nnObjFunction(params, *args):
     %     layer to unit i in output layer."""
     
     n_input, n_hidden, n_class, training_data, training_label, lambdaval = args
-    
+
     w1 = params[0:n_hidden * (n_input + 1)].reshape( (n_hidden, (n_input + 1)))
     w2 = params[(n_hidden * (n_input + 1)):].reshape((n_class, (n_hidden + 1)))
     obj_val = 0  
     
     hidden = []
-    #Your code here
+
+    ##OUR CODE
+
     for values in training_data:
         hidden.append( mlfunctions.feedforward_propagation(values, w1, n_hidden) )
     hidden = sigmoid( np.array(hidden) )
     print( "HIDDEN\n", hidden[:30] )
-    sys.exit(-1)
     
     part_two = []
     for hidden_a in hidden:
@@ -160,9 +168,14 @@ def nnObjFunction(params, *args):
     #you would use code similar to the one below to create a flat array
     #obj_grad = np.concatenate((grad_w1.flatten(), grad_w2.flatten()),0)
     
-    obj_grad = np.array()
+    calculated_error = 0 
+    ##calculate error based on https://piazza.com/class/ii0wz7uvsf112m?cid=116
     
-    return (obj_val,obj_grad)
+    for each in part_two:
+        assert type(each[0]) == np.float64 
+        calculated_error += mlfunctions.error_function(each, training_label, n_class )
+    
+    return (calculated_error, part_two )
 
 
 
@@ -223,7 +236,7 @@ args = (n_input, n_hidden, n_class, train_data, train_label, lambdaval)
 
 #Train Neural Network using fmin_cg or minimize from scipy,optimize module. Check documentation for a working example
 
-opts = {'maxiter' : 50}    # Preferred value.
+opts = {'maxiter' : 50 }    # Preferred value.
 
 nn_params = minimize(nnObjFunction, initialWeights, jac=True, args=args,method='CG', options=opts)
 

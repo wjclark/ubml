@@ -4,7 +4,7 @@ import math
 
 def feedforward_propagation(value_list,weight_matrix,n_hidden_values):
     #print len(value_list), len(weight_matrix[0])-1
-    assert len(value_list) == len(weight_matrix[0])-1  ##we are missing the regularization slot now.
+    #assert len(value_list) == len(weight_matrix[0])-1  ##we are missing the regularization slot now.
     a = []
     for j in range(n_hidden_values):
         aj = 0
@@ -16,7 +16,7 @@ def feedforward_propagation(value_list,weight_matrix,n_hidden_values):
 
 def feedforward_part_two(hidden_values,weight_matrix_two,n_output_layers):
 	b = []
-	for l in range(n_output_layers):
+	for i in range(n_output_layers):
 		bj = 0 
 		for j in range(len(hidden_values)):
 			bj += weight_matrix_two[j][i]*hidden_values[j]
@@ -46,7 +46,11 @@ def matt_sigmoid(x):
 			
 
 def error_function( values, true_values, n_values ):
-	pass
+	assert len(values) == len(true_values) == n_values
+	sum_of_errors = 0
+	for i in range(n_values):
+		sum += (( true_values[i] - values[i] ) ** 2)
+	return .5 * sum_of_errors
 
     
 if __name__ == "__main__":
