@@ -293,9 +293,9 @@ nn_params = minimize(nnObjFunction, initialWeights, jac=True, args=args,method='
 
 #Reshape nnParams from 1D vector into w1 and w2 matrices
 w1 = nn_params.x[0:n_hidden * (n_input + 1)].reshape( (n_hidden, (n_input + 1)))
-print "W1:\n", len(w1), '\n',  w1
+print( "W1:\n", len(w1), '\n',  w1 )
 w2 = nn_params.x[(n_hidden * (n_input + 1)):].reshape((n_class, (n_hidden + 1)))
-print "W2:\n", len(w2) ,'\n', w2
+print( "W2:\n", len(w2) ,'\n', w2 )
 
 #Test the computed parameters
 
