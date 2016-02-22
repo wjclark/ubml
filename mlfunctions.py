@@ -3,15 +3,22 @@ import numpy.linalg as la
 import math
 
 def feedforward_propagation(value_list,weight_matrix,n_hidden_values):
-    #print len(value_list), len(weight_matrix[0])-1
-    #assert len(value_list) == len(weight_matrix[0])-1  ##we are missing the regularization slot now.
+    #print len(value_list), len(weight_matrix[0])
     a = []
+    
+    temp_list = list( value_list )
+    temp_list.append(1.0) #add bias dimension
+    value_list = np.array(temp_list)
+    assert len(value_list) == len(weight_matrix[0])  ##we are missing the regularization slot now.
+    #print len(value_list), len(weight_matrix[0])
+
     for j in range(n_hidden_values):
         aj = 0
         for i in range(len(value_list)):
             aj += weight_matrix[j][i] * value_list[i]
         #print aj
         a.append(aj)
+        print(aj)
     return np.array(a)
 
 def feedforward_part_two(hidden_values,weight_matrix_two,n_output_layers):
@@ -21,6 +28,7 @@ def feedforward_part_two(hidden_values,weight_matrix_two,n_output_layers):
 		for j in range(len(hidden_values)):
 			bj += weight_matrix_two[j][i]*hidden_values[j]
 		b.append(bj)
+		print(bj)
 	return np.array(b)
 
 def matt_sigmoid(x):
@@ -51,6 +59,39 @@ def error_function( values, true_values, n_values ):
 	for i in range(n_values):
 		sum += (( true_values[i] - values[i] ) ** 2)
 	return .5 * sum_of_errors
+
+
+def calc_delta_hidden( actual, output ):
+	assert y == 0.0 or y == 1.0
+	delta = (actual - output )*output*(1.0-output)
+	return delta
+
+
+def calc_delta_input( outputs, old_deltas, old_weights ):
+	new_deltas = []
+	sum_of = 0
+	for j in range(len(old_weights)):
+		for l in range(len(old_weights[0])):
+			sum_of += old_deltas[l] * old_weights[l][j]
+		new_delta = outputs[j] * (1-outputs[j] ) * sum_of
+		new_deltas.append(new_delta)
+	return np.array(new_deltas)
+
+
+
+def backpropagation_hidden_to_output(weights, outputs, deltas, eta ):
+	new_weights = []
+	for i in range(len(weights)):
+		new_weights_level = []
+		for j in range(len(weights[0])):
+			new_w = weights[i][j] - eta * deltas[j] * weight[i][j]
+			new_weights_level.append( new_w )
+		new_weights.append(new_weights_level)
+	return np.array(new_weights)
+
+
+
+
 
     
 if __name__ == "__main__":

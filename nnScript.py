@@ -78,6 +78,7 @@ def preprocess():
             examples = mat[key]
             for ex in examples:
                 ex = [ float(x)/0xFF for x in ex.flatten() ] #normalize and reshape
+                ex.append( np.float64(1.0) )
                 data.append( ex )
         return data
 
@@ -93,7 +94,6 @@ def preprocess():
 
     #Your code here
     train_data = np.array( load_pylist(all_training_keys) )
-
     train_label = np.array( true_label(all_training_keys,'train') )
     validation_data = np.array( load_pylist(validation_keys) )
     validation_label = np.array( true_label(all_training_keys,'train') )
@@ -159,23 +159,44 @@ def nnObjFunction(params, *args):
     hidden = sigmoid( np.array(hidden) )
     print( "HIDDEN\n", hidden[:30] )
     
+
+    per_item_errors = []
     part_two = []
     for hidden_a in hidden:
-        part_two.append( mlfunctions.feedforward_part_two (hidden, w2, n_class)  )
+        part_two.append( mlfunctions.feedforward_part_two(hidden, w2, n_class)  )
     part_two = sigmoid(part_two)
+
     print( "PT2", part_two[:30] )
     #Make sure you reshape the gradient matrices to a 1D array. for instance if your gradient matrices are grad_w1 and grad_w2
     #you would use code similar to the one below to create a flat array
     #obj_grad = np.concatenate((grad_w1.flatten(), grad_w2.flatten()),0)
-    
+
+
+
+    err_grad2 = []
+    for i in range(len(part_two)):
+        error_level = []
+        for j in range(len(part_two[0])):
+            item_error = mlfunctions.calc_delta_hidden(training_label[i], part_two[i])
+            error_level.append(item_error)
+        err_grad2.append(error_level)
+
+    new_weights2 = mlfunctions.backpropagation_hidden_to_output(w2, part_two, err_grad2, lambdaval )
+
+    err_grad1  = calc_delta_input( part_two, err_grad2, w2 )
+
+    new_weights1 = backpropagation_hidden_to_output(w1, hidden, err_grad1, lambdaval )
+
+
+
     calculated_error = 0 
-    ##calculate error based on https://piazza.com/class/ii0wz7uvsf112m?cid=116
-    
+    ##calculate error based on suggestion from https://piazza.com/class/ii0wz7uvsf112m?cid=116
+
     for each in part_two:
         assert type(each[0]) == np.float64 
         calculated_error += mlfunctions.error_function(each, training_label, n_class )
     
-    return (calculated_error, part_two )
+    return (calculated_error, np.concatenate((new_weights1.flatten(), new_weights2.flatten()),0) )
 
 
 
@@ -197,6 +218,22 @@ def nnPredict(w1,w2,data):
     % Output: 
     % label: a column vector of predicted labels""" 
     
+    n_hidden = len( w2[0] )
+
+    hidden_layer = []
+    for vector in data:
+        hidden_layer.append( mlfunctions.feedforward_propagation(values, w1, n_hidden ) )
+    hidden_layer = sigmoid(hidden_layer)
+
+    output_layer = []
+    for layer in hidden_layer:
+        output_layer.append( mlfunctions.feedforward_part_two(layer, w2, len(w2) ) )
+    output_layer = sigmoid(output_layer)
+
+
+    print output_layer[0]
+    print hidden_layer[0]
+
     labels = np.array([])
     #Your code here
     
@@ -248,8 +285,9 @@ nn_params = minimize(nnObjFunction, initialWeights, jac=True, args=args,method='
 
 #Reshape nnParams from 1D vector into w1 and w2 matrices
 w1 = nn_params.x[0:n_hidden * (n_input + 1)].reshape( (n_hidden, (n_input + 1)))
+print "W1:\n", len(w1), '\n',  w1
 w2 = nn_params.x[(n_hidden * (n_input + 1)):].reshape((n_class, (n_hidden + 1)))
-
+print "W2:\n", len(w2) ,'\n', w2
 
 #Test the computed parameters
 
