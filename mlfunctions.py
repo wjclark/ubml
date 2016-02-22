@@ -18,7 +18,7 @@ def feedforward_propagation(value_list,weight_matrix,n_hidden_values):
             aj += weight_matrix[j][i] * value_list[i]
         #print aj
         a.append(aj)
-        print(aj)
+        #print(aj)
     return np.array(a)
 
 def feedforward_part_two(hidden_values,weight_matrix_two,n_output_layers):
@@ -28,7 +28,7 @@ def feedforward_part_two(hidden_values,weight_matrix_two,n_output_layers):
 		for j in range(len(hidden_values)):
 			bj += weight_matrix_two[j][i]*hidden_values[j]
 		b.append(bj)
-		print(bj)
+		#print(bj)
 	return np.array(b)
 
 def matt_sigmoid(x):
@@ -75,6 +75,7 @@ def calc_delta_input( outputs, old_deltas, old_weights ):
 			sum_of += old_deltas[l] * old_weights[l][j]
 		new_delta = outputs[j] * (1-outputs[j] ) * sum_of
 		new_deltas.append(new_delta)
+	print( new_deltas )
 	return np.array(new_deltas)
 
 
@@ -86,6 +87,7 @@ def backpropagation_hidden_to_output(weights, outputs, deltas, eta ):
 		for j in range(len(weights[0])):
 			new_w = weights[i][j] - eta * deltas[j] * weight[i][j]
 			new_weights_level.append( new_w )
+		print( new_weights_level )
 		new_weights.append(new_weights_level)
 	return np.array(new_weights)
 

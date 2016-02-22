@@ -155,7 +155,9 @@ def nnObjFunction(params, *args):
     ##OUR CODE
 
     for values in training_data:
-        hidden.append( mlfunctions.feedforward_propagation(values, w1, n_hidden) )
+        next_layer = mlfunctions.feedforward_propagation(values, w1, n_hidden)
+        print( next_layer )
+        hidden.append( next_layer )
     hidden = sigmoid( np.array(hidden) )
     print( "HIDDEN\n", hidden[:30] )
     
@@ -163,7 +165,9 @@ def nnObjFunction(params, *args):
     per_item_errors = []
     part_two = []
     for hidden_a in hidden:
-        part_two.append( mlfunctions.feedforward_part_two(hidden, w2, n_class)  )
+        next_layer = mlfunctions.feedforward_part_two(hidden, w2, n_class) 
+        print( next_layer )
+        part_two.append( next_layer  )
     part_two = sigmoid(part_two)
 
     print( "PT2", part_two[:30] )
@@ -222,17 +226,21 @@ def nnPredict(w1,w2,data):
 
     hidden_layer = []
     for vector in data:
-        hidden_layer.append( mlfunctions.feedforward_propagation(values, w1, n_hidden ) )
+        next_layer = mlfunctions.feedforward_propagation(values, w1, n_hidden )
+        print(next_layer)
+        hidden_layer.append( next_layer  )
     hidden_layer = sigmoid(hidden_layer)
 
     output_layer = []
     for layer in hidden_layer:
-        output_layer.append( mlfunctions.feedforward_part_two(layer, w2, len(w2) ) )
+        next_layer = mlfunctions.feedforward_part_two(layer, w2, len(w2) )
+        print( next_layer )
+        output_layer.append( next_layer )
     output_layer = sigmoid(output_layer)
 
 
-    print output_layer[0]
-    print hidden_layer[0]
+    print( output_layer[0] )
+    print( hidden_layer[0] )
 
     labels = np.array([])
     #Your code here
