@@ -7,9 +7,9 @@ def feedforward_propagation(value_list,weight_matrix,n_hidden_values):
     a = []
     
     temp_list = list( value_list )
-    temp_list.append(1.0) #add bias dimension
+    #temp_list.append(1.0) #add bias dimension
     value_list = np.array(temp_list)
-    assert len(value_list) == len(weight_matrix[0])  ##we are missing the regularization slot now.
+    #assert len(value_list) == len(weight_matrix[0])  ##we are missing the regularization slot now.
     #print len(value_list), len(weight_matrix[0])
 
     for j in range(n_hidden_values):
@@ -17,7 +17,7 @@ def feedforward_propagation(value_list,weight_matrix,n_hidden_values):
         for i in range(len(value_list)):
             aj += weight_matrix[j][i] * value_list[i]
         #print aj
-        a.append(aj)
+        a.append(aj+1.0)
         #print(aj)
     return np.array(a)
 
@@ -27,11 +27,11 @@ def feedforward_part_two(hidden_values,weight_matrix_two,n_output_layers):
 		bj = 0 
 		for j in range(len(hidden_values)):
 			bj += weight_matrix_two[j][i]*hidden_values[j]
-		b.append(bj)
+		b.append(bj+1.0)
 		#print(bj)
 	return np.array(b)
 
-def matt_sigmoid(x):
+def matt_sigmoid( x ):
 	if type(x) == np.float64:
 		val = 1/(1.0+math.e**-x)
 		#print val
@@ -54,7 +54,7 @@ def matt_sigmoid(x):
 			
 
 def error_function( values, true_values, n_values ):
-	assert len(values) == len(true_values) == n_values
+	assert len(values)-1 == n_values && len(true_values) == n_values
 	sum_of_errors = 0
 	for i in range(n_values):
 		sum += (( true_values[i] - values[i] ) ** 2)
