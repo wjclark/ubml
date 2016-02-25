@@ -10,6 +10,13 @@ def feedforward_propagation(value_list,weight_matrix,n_hidden_values):
     assert len(value_list) == len(weight_matrix[0])  ##we are missing the regularization slot now.
     #print( len(weight_matrix), len(weight_matrix[0]) )
 
+    """
+    matrix = np.matrix(weight_matrix)
+    matrix = matrix[:n_hidden_values,:len(value_list)]  #sub select from the matrix
+    
+    result = matrix * value_list.reshape((len(value_list),1))
+    #print( result )
+    """
     for j in range(n_hidden_values):
         aj = 0
         for i in range(len(value_list)):
@@ -17,6 +24,10 @@ def feedforward_propagation(value_list,weight_matrix,n_hidden_values):
         #print aj
         a.append(aj)
         #print(aj)
+    
+    #result = result.flatten()
+    #int( len(result) == len( a ), result[:5], a[:5] )
+
     return np.array(a)
 
 def feedforward_part_two(hidden_values,weight_matrix_two,n_output_layers):
