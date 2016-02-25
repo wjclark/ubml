@@ -153,18 +153,24 @@ def nnObjFunction(params, *args):
     hidden = []
 
     ##OUR CODE
-
+  
     for values in training_data:
-        next_layer = mlfunctions.feedforward_propagation(values, w1, n_hidden)
-        print( next_layer )
+        temp_list = list( values )
+        temp_list.append(1.0) #add bias dimension
+        values = np.array(temp_list)
+        next_layer = mlfunctions.feedforward_propagation( values, w1, n_hidden)
+        #print( next_layer )
         hidden.append( next_layer )
     hidden = sigmoid( np.array(hidden) )
     print( "HIDDEN\n", hidden[:30] )
     
 
+    ctr = len(hidden)
     per_item_errors = []
     part_two = []
     for hidden_a in hidden:
+        ctr -= 1
+        print(ctr)
         next_layer = mlfunctions.feedforward_part_two(hidden, w2, n_class) 
         print( next_layer )
         part_two.append( next_layer  )
