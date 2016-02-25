@@ -182,18 +182,13 @@ def nnObjFunction(params, *args):
     #obj_grad = np.concatenate((grad_w1.flatten(), grad_w2.flatten()),0)
 
 
-
-    err_grad2 = []
-    for i in range(len(part_two)):
-        error_level = []
-        for j in range(len(part_two[0])):
-            item_error = mlfunctions.calc_delta_hidden(training_label[i], part_two[i])
-            error_level.append(item_error)
-        err_grad2.append(error_level)
+    
+    
+    err_grad2 = mlfunctions.calc_part_one_grad(train_label, part_two)
 
     new_weights2 = mlfunctions.backpropagation_hidden_to_output(w2, part_two, err_grad2, lambdaval )
 
-    err_grad1  = calc_delta_input( part_two, err_grad2, w2 )
+    err_grad1  = calc_delta_input( part_one, err_grad2, w1 )
 
     new_weights1 = backpropagation_hidden_to_output(w1, hidden, err_grad1, lambdaval )
 
@@ -254,73 +249,73 @@ def nnPredict(w1,w2,data):
     return labels
     
 
+if __name__ == "__main__":
+
+    """**************Neural Network Script Starts here********************************"""
+
+    train_data, train_label, validation_data,validation_label, test_data, test_label = preprocess();
 
 
-"""**************Neural Network Script Starts here********************************"""
+    #  Train Neural Network
 
-train_data, train_label, validation_data,validation_label, test_data, test_label = preprocess();
+    # set the number of nodes in input unit (not including bias unit)
+    n_input = train_data.shape[1]; 
 
+    # set the number of nodes in hidden unit (not including bias unit)
+    n_hidden = 50;
+    				   
+    # set the number of nodes in output unit
+    n_class = 10;				   
 
-#  Train Neural Network
+    # initialize the weights into some random matrices
+    initial_w1 = initializeWeights(n_input, n_hidden);
+    initial_w2 = initializeWeights(n_hidden, n_class);
 
-# set the number of nodes in input unit (not including bias unit)
-n_input = train_data.shape[1]; 
+    # unroll 2 weight matrices into single column vector
+    initialWeights = np.concatenate((initial_w1.flatten(), initial_w2.flatten()),0)
 
-# set the number of nodes in hidden unit (not including bias unit)
-n_hidden = 50;
-				   
-# set the number of nodes in output unit
-n_class = 10;				   
-
-# initialize the weights into some random matrices
-initial_w1 = initializeWeights(n_input, n_hidden);
-initial_w2 = initializeWeights(n_hidden, n_class);
-
-# unroll 2 weight matrices into single column vector
-initialWeights = np.concatenate((initial_w1.flatten(), initial_w2.flatten()),0)
-
-# set the regularization hyper-parameter
-lambdaval = 0;
+    # set the regularization hyper-parameter
+    lambdaval = 0;
 
 
-args = (n_input, n_hidden, n_class, train_data, train_label, lambdaval)
+    args = (n_input, n_hidden, n_class, train_data, train_label, lambdaval)
 
-#Train Neural Network using fmin_cg or minimize from scipy,optimize module. Check documentation for a working example
+    #Train Neural Network using fmin_cg or minimize from scipy,optimize module. Check documentation for a working example
 
-opts = {'maxiter' : 50 }    # Preferred value.
+    opts = {'maxiter' : 50 }    # Preferred value.
 
-nn_params = minimize(nnObjFunction, initialWeights, jac=True, args=args,method='CG', options=opts)
-
-
-#In Case you want to use fmin_cg, you may have to split the nnObjectFunction to two functions nnObjFunctionVal
-#and nnObjGradient. Check documentation for this function before you proceed.
-#nn_params, cost = fmin_cg(nnObjFunctionVal, initialWeights, nnObjGradient,args = args, maxiter = 50)
+    nn_params = minimize(nnObjFunction, initialWeights, jac=True, args=args,method='CG', options=opts)
 
 
-#Reshape nnParams from 1D vector into w1 and w2 matrices
-w1 = nn_params.x[0:n_hidden * (n_input + 1)].reshape( (n_hidden, (n_input + 1)))
-print( "W1:\n", len(w1), '\n',  w1 )
-w2 = nn_params.x[(n_hidden * (n_input + 1)):].reshape((n_class, (n_hidden + 1)))
-print( "W2:\n", len(w2) ,'\n', w2 )
-
-#Test the computed parameters
-
-predicted_label = nnPredict(w1,w2,train_data)
-
-#find the accuracy on Training Dataset
-
-print('\n Training set Accuracy:' + str(100*np.mean((predicted_label == train_label).astype(float))) + '%')
-
-predicted_label = nnPredict(w1,w2,validation_data)
-
-#find the accuracy on Validation Dataset
-
-print('\n Validation set Accuracy:' + str(100*np.mean((predicted_label == validation_label).astype(float))) + '%')
+    #In Case you want to use fmin_cg, you may have to split the nnObjectFunction to two functions nnObjFunctionVal
+    #and nnObjGradient. Check documentation for this function before you proceed.
+    #nn_params, cost = fmin_cg(nnObjFunctionVal, initialWeights, nnObjGradient,args = args, maxiter = 50)
 
 
-predicted_label = nnPredict(w1,w2,test_data)
+    #Reshape nnParams from 1D vector into w1 and w2 matrices
+    w1 = nn_params.x[0:n_hidden * (n_input + 1)].reshape( (n_hidden, (n_input + 1)))
+    print( "W1:\n", len(w1), '\n',  w1 )
+    w2 = nn_params.x[(n_hidden * (n_input + 1)):].reshape((n_class, (n_hidden + 1)))
+    print( "W2:\n", len(w2) ,'\n', w2 )
 
-#find the accuracy on Validation Dataset
+    #Test the computed parameters
 
-print('\n Test set Accuracy:' + + str(100*np.mean((predicted_label == test_label).astype(float))) + '%')
+    predicted_label = nnPredict(w1,w2,train_data)
+
+    #find the accuracy on Training Dataset
+
+    print('\n Training set Accuracy:' + str(100*np.mean((predicted_label == train_label).astype(float))) + '%')
+
+    predicted_label = nnPredict(w1,w2,validation_data)
+
+    #find the accuracy on Validation Dataset
+
+    print('\n Validation set Accuracy:' + str(100*np.mean((predicted_label == validation_label).astype(float))) + '%')
+
+
+    predicted_label = nnPredict(w1,w2,test_data)
+
+    #find the accuracy on Validation Dataset
+
+    print('\n Test set Accuracy:' + + str(100*np.mean((predicted_label == test_label).astype(float))) + '%')
 

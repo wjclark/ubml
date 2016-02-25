@@ -6,9 +6,8 @@ def feedforward_propagation(value_list,weight_matrix,n_hidden_values):
     #print len(value_list), len(weight_matrix[0])
     a = []
     
-    
-    assert len(value_list) == len(weight_matrix[0])  ##we are missing the regularization slot now.
     #print( len(weight_matrix), len(weight_matrix[0]) )
+    #assert len(value_list) == len(weight_matrix[0])  ##we are missing the regularization slot now.
 
     """
     matrix = np.matrix(weight_matrix)
@@ -20,7 +19,7 @@ def feedforward_propagation(value_list,weight_matrix,n_hidden_values):
     for j in range(n_hidden_values):
         aj = 0
         for i in range(len(value_list)):
-            aj += weight_matrix[j][i] * value_list[j]
+            aj += weight_matrix[j][i] * value_list[i]
         #print aj
         a.append(aj)
         #print(aj)
@@ -68,25 +67,39 @@ def matt_sigmoid( x ):
             
 
 def error_function( values, true_values, n_values ):
-    assert len(values)-1 == n_values and len(true_values) == n_values
+    #assert len(values)-1 == n_values 
+    #assert len(true_values) == n_values
     sum_of_errors = 0
-    for i in range(n_values):
-        sum += (( true_values[i] - values[i] ) ** 2)
+    #print( len(values), len(true_values) )
+    for i in range(n_values-1):
+        #print(i)
+        sum_of_errors += (( true_values[i] - values[i] ) ** 2)
     return .5 * sum_of_errors
 
+def calc_part_one_grad(labels,outputs):
+        err_grad2 = []
+        for i in range(len(outputs)):
+            error_level = []
+            for j in range(len(outputs[0])):
+                item_error = calc_delta_hidden(labels[i], outputs[i])
+                error_level.append(item_error)
+            err_grad2.append(error_level)
+        return err_grad2
 
 def calc_delta_hidden( actual, output ):
-    assert y == 0.0 or y == 1.0
+    assert actual == 0.0 or actual == 1.0
     delta = (actual - output )*output*(1.0-output)
     return delta
 
 
 def calc_delta_input( outputs, old_deltas, old_weights ):
+    print( len(outputs) , len(old_deltas[0]), len(old_weights[0]), len(old_weights) )
     new_deltas = []
     sum_of = 0
     for j in range(len(old_weights)):
         for l in range(len(old_weights[0])):
-            sum_of += old_deltas[l] * old_weights[l][j]
+            print j,l
+            sum_of += old_deltas[0][l] * old_weights[j][l]
         new_delta = outputs[j] * (1-outputs[j] ) * sum_of
         new_deltas.append(new_delta)
     print( new_deltas )
@@ -95,11 +108,12 @@ def calc_delta_input( outputs, old_deltas, old_weights ):
 
 
 def backpropagation_hidden_to_output(weights, outputs, deltas, eta ):
+    print "LEN_DELTAS", len(deltas), "LEN_WEIGHTS", len(weights)
     new_weights = []
     for i in range(len(weights)):
         new_weights_level = []
         for j in range(len(weights[0])):
-            new_w = weights[i][j] - eta * deltas[j] * weight[i][j]
+            new_w = weights[i][j] - eta * deltas[j] * weights[i][j]
             new_weights_level.append( new_w )
         print( new_weights_level )
         new_weights.append(new_weights_level)
