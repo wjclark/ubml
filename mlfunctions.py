@@ -17,8 +17,6 @@ def feedforward_propagation(value_list,weight_matrix,n_hidden_values):
         #print aj
         a.append(aj)
         #print(aj)
-    result = np.array(result)
-    print( "COMPARE", result, np.array(a), result == np.array(a) )
     return np.array(a)
 
 def feedforward_part_two(hidden_values,weight_matrix_two,n_output_layers):
@@ -30,7 +28,7 @@ def feedforward_part_two(hidden_values,weight_matrix_two,n_output_layers):
             print( weight_matrix_two[j] )
             print( weight_matrix_two[j][i] )
             print( hidden_values[j])
-            bj += weight_matrix_two[j][i]*hidden_values[j]
+            bj += weight_matrix_two[i][j]*hidden_values[j]
         b.append(bj)
         #print(bj)
     
