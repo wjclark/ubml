@@ -165,14 +165,14 @@ def nnObjFunction(params, *args):
     print( "HIDDEN\n", hidden[:30] )
     
 
-    ctr = len(hidden)
+    #ctr = len(hidden)
     per_item_errors = []
     part_two = []
     for hidden_a in hidden:
-        ctr -= 1
-        print(ctr)
+        #ctr -= 1
+        #print(ctr)
         next_layer = mlfunctions.feedforward_part_two(hidden, w2, n_class) 
-        print( next_layer )
+        #print( next_layer )
         part_two.append( next_layer  )
     part_two = sigmoid(part_two)
 
