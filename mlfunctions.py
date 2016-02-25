@@ -26,7 +26,7 @@ def feedforward_part_two(hidden_values,weight_matrix_two,n_output_layers):
     for i in range(n_output_layers):
         bj = 0 
         for j in range(len(hidden_values)):
-            print i, j
+            print( i, j )
             print( weight_matrix_two[j] )
             print( weight_matrix_two[j][i] )
             print( hidden_values[j])
