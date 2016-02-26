@@ -227,23 +227,43 @@ def nnPredict(w1,w2,data):
 
     hidden_layer = []
     for vector in data:
-        next_layer = mlfunctions.feedforward_propagation(values, w1, n_hidden )
+        next_layer = mlfunctions.feedforward_propagation(data, w1, n_hidden )
         print(next_layer)
-        hidden_layer.append( next_layer  )
-    hidden_layer = sigmoid(hidden_layer)
+        print("!")
+        hidden_layer.append( sigmoid( np.array(next_layer))  )
 
     output_layer = []
     for layer in hidden_layer:
         next_layer = mlfunctions.feedforward_part_two(layer, w2, len(w2) )
         print( next_layer )
-        output_layer.append( next_layer )
-    output_layer = sigmoid(output_layer)
+        output_layer.append( sigmoid( np.array(next_layer )  ) )
+    output_layer = np.array(output_layer)
 
 
-    print( output_layer[0] )
-    print( hidden_layer[0] )
+    print( "OUTPUT", output_layer[0] )
+    print("HIDDEN", hidden_layer[0] )
 
-    labels = np.array([])
+    predictions = []
+    for array in output_layer:
+        for item in array:
+            layer = []
+            prediction = -1
+            maximum = 0
+            print( item )
+            for i in range(len(item)):
+                print( item[i], maximum, item[i] > maximum )
+                if item[i] > maximum:
+                    maximum = item[i]
+                    prediction = i
+            layer.append(prediction)
+        predictions.append(layer)
+    
+    print( predictions )
+
+
+        
+
+    labels = np.array(predictions)
     #Your code here
     
     return labels

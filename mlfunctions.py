@@ -45,22 +45,24 @@ def feedforward_part_two(hidden_values,weight_matrix_two,n_output_layers):
     return np.array(b)
 
 def matt_sigmoid( x ):
+    print(type(x))
     if type(x) == np.float64:
         val = 1/(1.0+math.e**-x)
         #print val
         return val
-    elif type(x) == np.ndarray:
+    elif type(x) == np.ndarray or type(x) == np.array:
         ret_arr =  []
         if type(x[0]) == np.float64: ##if it's an array...
             for num in x:
                 ret_arr.append( matt_sigmoid(num) )
             return np.array(ret_arr)
-        elif type(x[0]) == np.ndarray and type( x[0][0] ) == np.float64: ##if it's a matrix (hopefully)
+        elif ( type(x[0]) == np.ndarray and type( x[0][0] ) == np.float64 ) : ##if it's a matrix (hopefully)
             new_matrix = []
             for row in x:
                 new_matrix.append( matt_sigmoid(row) )
             return np.array(new_matrix)
         else :
+            print (type(x), type(x[0]), type[x[0][0]])
             assert False #somthing has gone really wrong
     else:
         assert False #something has gone suuuper wrong
@@ -98,7 +100,7 @@ def calc_delta_input( outputs, old_deltas, old_weights ):
     sum_of = 0
     for j in range(len(old_weights)):
         for l in range(len(old_weights[0])):
-            print j,l
+            #print j,l
             sum_of += old_deltas[0][l] * old_weights[j][l]
         new_delta = outputs[j] * (1-outputs[j] ) * sum_of
         new_deltas.append(new_delta)
@@ -108,7 +110,7 @@ def calc_delta_input( outputs, old_deltas, old_weights ):
 
 
 def backpropagation_hidden_to_output(weights, outputs, deltas, eta ):
-    print "LEN_DELTAS", len(deltas), "LEN_WEIGHTS", len(weights)
+    print( "LEN_DELTAS", len(deltas), "LEN_WEIGHTS", len(weights) )
     new_weights = []
     for i in range(len(weights)):
         new_weights_level = []
