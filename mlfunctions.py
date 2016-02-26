@@ -49,7 +49,7 @@ def matt_sigmoid( x ):
     if type(x) == np.float64:
         val = 1/(1.0+math.e**-x)
         #print va
-l        return val
+        return val
     elif type(x) == np.ndarray or type(x) == np.array:
         ret_arr =  []
         if type(x[0]) == np.float64: ##if it's an array...
