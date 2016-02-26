@@ -184,9 +184,9 @@ def nnObjFunction(params, *args):
 
     
     
-    err_grad2 = mlfunctions.calc_part_one_grad(train_label, part_two)
+    err_grad2 = mlfunctions.calc_part_one_grad(train_label, [part_two] ) 
 
-    new_weights2 = mlfunctions.backpropagation_hidden_to_output(w2, part_two, err_grad2, lambdaval )
+    new_weights2 = mlfunctions.backpropagation_hidden_to_output(w2, part_two, np.array(err_grad2).flatten(), lambdaval )
 
     err_grad1  = calc_delta_input( part_one, err_grad2, w1 )
 
