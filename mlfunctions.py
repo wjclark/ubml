@@ -31,31 +31,37 @@ def feedforward_propagation(value_list,weight_matrix,n_hidden_values):
 
 def feedforward_part_two(hidden_values,weight_matrix_two,n_output_layers):
     b = []
+    print( "gdi", n_output_layers , len(hidden_values) )
     for i in range(n_output_layers):
         bj = 0 
-        for j in range(len(hidden_values)-1):
+        for j in range(len(hidden_values)):
             #print( i, j )
             #print( weight_matrix_two[j] )
             #print( weight_matrix_two[j][i] )
             #print( hidden_values[j])
-            bj += weight_matrix_two[i][j]*hidden_values[j]
+            #print( weight_matrix_two[i][j], hidden_values[i] )
+            bj += weight_matrix_two[i][j]*hidden_values[i]
         b.append(bj)
+    print("B", b)
         #print(bj)
     
     return np.array(b)
 
 def matt_sigmoid( x ):
-    #print(type(x))
+    print( "sigmoid of ", x)
+    print(type(x))
     if type(x) == np.float64:
         val = 1/(1.0+math.e**-x)
         #print va
         return val
     elif type(x) == np.ndarray or type(x) == np.array:
+       
         ret_arr =  []
         if type(x[0]) == np.float64: ##if it's an array...
             for num in x:
                 ret_arr.append( matt_sigmoid(num) )
             return np.array(ret_arr)
+
         elif ( type(x[0]) == np.ndarray and type( x[0][0] ) == np.float64 ) : ##if it's a matrix (hopefully)
             new_matrix = []
             for row in x:
@@ -73,7 +79,10 @@ def error_function( values, true_values, n_values ):
     #assert len(true_values) == n_values
     sum_of_errors = 0
     #print( len(values), len(true_values) )
-    for i in range(n_values-1):
+    for i in range(len(values)):
+        print( len(true_values), len(values), len(true_values), values )
+        print (true_values[i], values[i])
+
         #print(i)
         sum_of_errors += (( true_values[i] - values[i] ) ** 2)
     return .5 * sum_of_errors
@@ -82,13 +91,16 @@ def calc_part_one_grad(labels,outputs):
         err_grad2 = []
         for i in range(len(outputs)):
             error_level = []
-            for j in range(len(outputs[0])):
-                item_error = calc_delta_hidden(labels[i], outputs[i])
+            for j in range(len(outputs[0])-1):
+                print(i,j)
+                print( "OUTPUTS", outputs[i][j], labels[i] )
+                item_error = calc_delta_hidden(labels[i][j], outputs[i][j])
                 error_level.append(item_error)
             err_grad2.append(error_level)
         return err_grad2
 
 def calc_delta_hidden( actual, output ):
+    print( "Actual", actual , output)
     assert actual == 0.0 or actual == 1.0
     delta = (actual - output )*output*(1.0-output)
     return delta
@@ -101,7 +113,9 @@ def calc_delta_input( outputs, old_deltas, old_weights ):
     for j in range(len(old_weights)):
         for l in range(len(old_weights[0])):
             #print j,l
-            sum_of += old_deltas[0][l] * old_weights[j][l]
+            pi_of = old_deltas[j][l] * old_weights[j][l]
+            print( "pi", pi_of )
+            sum_of += pi_of
         new_delta = outputs[j] * (1-outputs[j] ) * sum_of
         new_deltas.append(new_delta)
     #print( new_deltas )
@@ -110,7 +124,7 @@ def calc_delta_input( outputs, old_deltas, old_weights ):
 
 
 def backpropagation_hidden_to_output(weights, outputs, deltas, eta ):
-    print( "LEN_DELTAS", len(deltas), "LEN_WEIGHTS", len(weights) )
+    print( "LEN_DELTAS", len(deltas), "LEN_WEIGHTS", len(weights), len(weights[0]) )
     new_weights = []
     for i in range(len(weights)):
         new_weights_level = []

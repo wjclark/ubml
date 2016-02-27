@@ -7,7 +7,9 @@ from math import sqrt
 import math
 import mlfunctions
 import sys
-   
+
+
+n_class = 5 
 
 def initializeWeights(n_in,n_out):
     """
@@ -31,7 +33,7 @@ def sigmoid(z):
     
     """# Notice that z can be a scalar, a vector or a matrix
     # return the sigmoid of input z"""
-    return mlfunctions.matt_sigmoid(z)
+    return expit(z)
     
     
     
@@ -63,6 +65,30 @@ def preprocess():
      - normalize the data to [0, 1]
      - feature selection"""
     
+    import random
+    def make_random_true_labels( dim1, dim2 ):
+        a = [ [0 for x in range(dim1)] for y in range(dim2) ]
+        for row in a:
+            row[random.randint(0,dim1-1)] = 1
+            row  = np.array(row)
+        a = np.array(a)
+        return a
+
+    examples = 7
+    dim = 3
+    print(   make_random_true_labels(4,examples) )
+
+
+    train_data = np.array( [ np.random.random(dim) for x in range(examples) ] )
+    train_label =  make_random_true_labels(n_class,examples)
+    validation_data = np.array( [ np.random.random(dim) for x in range(examples) ]   )
+    validation_label = make_random_true_labels(n_class,examples)
+    test_data = np.array( [ np.random.random(dim) for x in range(examples) ]  )
+    test_label = make_random_true_labels(n_class,examples)
+
+
+    """
+
     mat = loadmat('mnist_all.mat') #loads the MAT object as a Dictionary
     
     #Pick a reasonable size for validation data
@@ -100,10 +126,11 @@ def preprocess():
     test_data = np.array( load_pylist(test_keys) )
     test_label = np.array( true_label(test_keys,'test') )
     
+    """ 
     return train_data, train_label, validation_data, validation_label, test_data, test_label
     
     
-    
+   
 
 def nnObjFunction(params, *args):
     """
@@ -161,7 +188,7 @@ def nnObjFunction(params, *args):
         next_layer = mlfunctions.feedforward_propagation( values, w1, n_hidden)
         #print( next_layer )
         hidden.append( next_layer )
-    hidden = sigmoid( np.array(hidden) )
+    hidden = sigmoid( hidden )
     print( "HIDDEN\n", hidden[:30] )
     
 
@@ -171,10 +198,11 @@ def nnObjFunction(params, *args):
     for hidden_a in hidden:
         #ctr -= 1
         #print(ctr)
-        next_layer = mlfunctions.feedforward_part_two(hidden, w2, n_class) 
+        next_layer = mlfunctions.feedforward_part_two(hidden_a, w2, n_class) 
         #print( next_layer )
-        part_two.append( next_layer  )
-    part_two = sigmoid(part_two)
+        part_two.append( np.array(next_layer) )
+
+    part_two = sigmoid(part_two )
 
     print( "PT2", part_two[:30] )
     #Make sure you reshape the gradient matrices to a 1D array. for instance if your gradient matrices are grad_w1 and grad_w2
@@ -184,13 +212,13 @@ def nnObjFunction(params, *args):
 
     
     
-    err_grad2 = mlfunctions.calc_part_one_grad(train_label, [part_two] ) 
+    err_grad2 = mlfunctions.calc_part_one_grad(train_label, part_two ) 
 
     new_weights2 = mlfunctions.backpropagation_hidden_to_output(w2, part_two, np.array(err_grad2).flatten(), lambdaval )
 
-    err_grad1  = calc_delta_input( part_one, err_grad2, w1 )
+    err_grad1  = mlfunctions.calc_delta_input( hidden, err_grad2, w1 )
 
-    new_weights1 = backpropagation_hidden_to_output(w1, hidden, err_grad1, lambdaval )
+    new_weights1 = mlfunctions.backpropagation_hidden_to_output(w1, hidden, err_grad1, lambdaval )
 
 
 
@@ -200,8 +228,11 @@ def nnObjFunction(params, *args):
     for each in part_two:
         assert type(each[0]) == np.float64 
         calculated_error += mlfunctions.error_function(each, training_label, n_class )
-    
-    return (calculated_error, np.concatenate((new_weights1.flatten(), new_weights2.flatten()),0) )
+    print(calculated_error)
+    err_grad1 = np.array(err_grad1)
+    err_grad2 =  np.array(err_grad2) 
+    print( len(err_grad1), len(err_grad1[0]) )
+    return (calculated_error, np.concatenate((err_grad1, err_grad2) ) )
 
 
 
@@ -234,7 +265,7 @@ def nnPredict(w1,w2,data):
 
     output_layer = []
     for layer in hidden_layer:
-        next_layer = mlfunctions.feedforward_part_two(layer, w2, len(w2) )
+        next_layer = mlfunctions.feedforward_part_two(layer, w2, n_class )
         print( next_layer )
         output_layer.append( sigmoid( np.array(next_layer )  ) )
     output_layer = np.array(output_layer)
@@ -282,10 +313,10 @@ if __name__ == "__main__":
     n_input = train_data.shape[1]; 
 
     # set the number of nodes in hidden unit (not including bias unit)
-    n_hidden = 50;
+    n_hidden = 7;
     				   
     # set the number of nodes in output unit
-    n_class = 10;				   
+    n_class = 5				   
 
     # initialize the weights into some random matrices
     initial_w1 = initializeWeights(n_input, n_hidden);
@@ -302,7 +333,7 @@ if __name__ == "__main__":
 
     #Train Neural Network using fmin_cg or minimize from scipy,optimize module. Check documentation for a working example
 
-    opts = {'maxiter' : 50 }    # Preferred value.
+    opts = {'maxiter' : 1 }    # Preferred value.
 
     nn_params = minimize(nnObjFunction, initialWeights, jac=True, args=args,method='CG', options=opts)
 
