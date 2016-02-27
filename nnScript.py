@@ -138,11 +138,16 @@ def nnObjFunction(params, *args):
     for i in range(len(training_data)):
         example = np.concatenate( ( training_data[i], [1.0]), 1 ) #extract example, add bias
         print( example )
-        row = np.dot( np.array( example ), w1[i]  ) #vector dot product
+        row = []
+        for j in range(n_hidden): #for each example, for each weight layer...
+            row.append( np.dot( np.array( example ), w1[j]  ) ) #vector dot product
         hidden_layers.append(row)
         print( "ROW:", row )
 
-
+    for i in range(len(hidden_layers)):
+        hidden_layers[i] = sigmoid( hidden_layers[i] )
+        print( hidden_layers[i] )
+    print( len(hidden_layers) )
     
     
     
